@@ -1,0 +1,33 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+input AuthInput {
+  password: String!
+  username: String!
+}
+
+type AuthResponse {
+  access_token: String!
+}
+
+input CreateUserInput {
+  email: String!
+  password: String!
+  username: String!
+}
+
+type Mutation {
+  createUser(createUserInput: CreateUserInput!): User!
+  login(authInput: AuthInput!): AuthResponse!
+}
+
+type Query {
+  users: [User!]!
+}
+
+type User {
+  email: String!
+  id: ID!
+  username: String!
+}
