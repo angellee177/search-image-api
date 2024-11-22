@@ -1,24 +1,32 @@
-version: '3.8'
-
+version: '3.9'
 services:
-  postgres:
+  nestapp:
+    container_name: image-auth
+    image: phanteon_image_auth/nestapp:1.0.0
+    build: .
+    ports:
+      - '3000:3000'
+    environment:
+      - DB_TYPE=${DB_TYPE}
+      - PG_USER=${PG_USER}
+      - PG_PASSWORD=${PG_PASSWORD}
+      - PG_DB=${PG_DB}
+      - PG_PORT=5432
+      - PG_HOST=db 
+      - NODE_ENV=${NODE_ENV}      # Specify the environment (e.g., production, development)
+      - JWT_SECRET=${JWT_SECRET} # Secret for JWT
+    depends_on:
+      - db
+  db:
+    container_name: image-auth-db
     image: postgres:latest
-    container_name: image-db
-    restart: unless-stopped
     environment:
       POSTGRES_USER: angel
       POSTGRES_PASSWORD: angel
       POSTGRES_DB: image_api_db
     ports:
-      - "5433:5432"  # Host port 5433 mapped to container port 5432
+      - '${PG_PORT}:5432'
     volumes:
-      - postgres_data:/var/lib/postgresql/data
-    networks:
-      - pg-network
-
+      - pgdata:/var/lib/postgresql/data
 volumes:
-  postgres_data:  # Volume to persist database data
-
-networks:
-  pg-network:
-    driver: bridge
+  pgdata: {}
