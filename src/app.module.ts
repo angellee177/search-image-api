@@ -6,6 +6,7 @@ import { config as dotenvConfig } from 'dotenv';
 import { AuthModule } from "./auth/auth.module";
 import { UsersModule } from "./user/user.module";
 import { ApolloDriver } from "@nestjs/apollo";
+import { setLog } from "./common/logger.helper";
 
 dotenvConfig({ path: '.env' });
 
@@ -33,4 +34,12 @@ dotenvConfig({ path: '.env' });
     UsersModule,
   ],
 })
-export class AppModule {}
+export class AppModule {
+  configure(): void {
+    setLog({
+      level: "info",
+      method: "AppModule.ts",
+      message: `Apps runnng in Environment: ${process.env.NODE_ENV}`
+    })
+  }
+}
