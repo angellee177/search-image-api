@@ -7,6 +7,7 @@ import { AuthModule } from "./auth/auth.module";
 import { UsersModule } from "./user/user.module";
 import { ApolloDriver } from "@nestjs/apollo";
 import { setLog } from "./common/logger.helper";
+import { ConfigService } from "@nestjs/config";
 
 dotenvConfig({ path: '.env' });
 
@@ -20,15 +21,9 @@ dotenvConfig({ path: '.env' });
       csrfPrevention: true, // Enable CSRF prevention
       context: ({ req }) => ({ headers: req.headers }), // Pass headers for context
     }),
-    TypeOrmModule.forRoot({
-      type: process.env.DB_TYPE as 'postgres',
-      host: process.env.PG_HOST,
-      port: parseInt(process.env.PG_PORT, 10),
-      username: process.env.PG_USER,
-      password: process.env.PG_PASSWORD,
-      database: process.env.PG_DB,
-      entities: [__dirname + '/**/*.entity{.ts,.js}'],
-      synchronize: true,
+    TypeOrmModule.forRootAsync({
+      inject: [ConfigService],
+      useFactory: async (configService: ConfigService) => (configService.get('typeorm'))
     }),
     AuthModule,
     UsersModule,
