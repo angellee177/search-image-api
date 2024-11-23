@@ -1,0 +1,45 @@
+name: Deploy to Google Cloud Run
+
+on:
+  push:
+    branches:
+      - main  # Change this if your default branch is different
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '20'  # Use the version that matches your project
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build the application
+        run: npm run build
+
+      - name: Build Docker image
+        run: |
+          docker build . -t gcr.io/${{ secrets.GCP_PROJECT_ID }}/image-auth-db
+
+      - name: Authenticate with Google Cloud
+        run: echo "${{ secrets.GCP_SA_KEY }}" | base64 --decode > ${HOME}/gcloud-key.json && gcloud auth activate-service-account --key-file=${HOME}/gcloud-key.json
+
+      - name: Push Docker image to Google Container Registry
+        run: |
+          gcloud auth configure-docker
+          docker push gcr.io/${{ secrets.GCP_PROJECT_ID }}/image-auth-db
+
+      - name: Deploy to Cloud Run
+        run: |
+          gcloud run deploy image-auth-db \
+            --image gcr.io/${{ secrets.GCP_PROJECT_ID }}/image-auth-db \
+            --platform managed \
+            --region ${{ secrets.GCP_REGION }} \
+            --allow-unauthenticated \
+            --project ${{ secrets.GCP_PROJECT_ID }}
