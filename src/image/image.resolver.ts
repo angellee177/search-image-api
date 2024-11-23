@@ -3,7 +3,7 @@ import { ImagesService } from "./image.service";
 import { errorResponse, successResponse } from "../common/response.helper";
 import { Image } from "./dto/image-response.dto";
 import { setLog } from "../common/logger.helper";
-import { GqlAuthGuard } from "src/auth/guard/gql-auth.guard";
+import { GqlAuthGuard } from "../auth/guard/gql-auth.guard";
 import { UseGuards } from "@nestjs/common";
 
 @Resolver()
