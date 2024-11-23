@@ -1,99 +1,155 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
-
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
-
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#9" alt="Coverage" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+# Image Search API
 
 ## Description
+Search images from Pixabay, Unsplash, and Storyblock using GraphQL.
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+## System Design
+Please check [here](./src/docs/system-design.MD) to see more detail about the API system design.
 
-## Project setup
+## Project Setup
 
-```bash
+Before you can start the project, ensure all dependencies are installed:
+
+```
 $ npm install
 ```
 
-## Compile and run the project
+## Running the Project
 
-```bash
-# development
-$ npm run start
+You can choose to run the project locally. The following instructions cover the setup for local development:
 
-# watch mode
-$ npm run start:dev
+### Local Development Setup
+To run the project locally, use the following commands:
 
-# production mode
-$ npm run start:prod
+### Step 1: Set Up Environment Variables
+
+Create a .env file in the root directory with the following configuration:
+
+```
+DB_TYPE=db_type
+PG_USER=your_db_username
+PG_PASSWORD=your_db_password
+PG_DB=your_db_name
+PG_PORT=port
+PG_HOST=localhost
+SECRET=your_secret_token
+PORT=3000
+NODE_ENV=production
+PIXABAY_URL=https://pixabay.com/api/
+PIXABAY_API_KEY=your_pixabay_api_key
+UNSPLASH_URL=https://api.unsplash.com/search/collections
+UNSPLASH_ACCESS_KEY=your_unsplash_api_key
+STORYBLOCK_BASE_URL=https://api.graphicstock.com
+STORYBLOCK_SEARCH_URL=/api/v1/stock-items/search/
+STORYBLOCK_API_KEY=your_storyblock_api_key
+```
+You can refer to the [.env-example](./.env-example) file here.
+
+### Step 2: Run Docker Compose
+
+Once you have the environment variables set up, use the following commands to start the project with Docker Compose:
+
+```
+docker-compose up --build
+```
+This will start the application and its dependencies (like the database) using Docker containers.
+
+### Step 3: Access GraphQL Playground
+
+To interact with the GraphQL API, visit the following URL:
+
+```
+http://localhost:${your_port}/graphql
 ```
 
-## Run tests
+- Replacen `${your_port}` with the port defined in your `.env` file or the default `(e.g., 3000)`.
+- Example: If the application is running on port 3000, <br>
+visit http://localhost:3000/graphql to access the GraphQL playground.
 
-```bash
-# unit tests
+Here are some example queries and mutations you can run:
+
+### Example Mutation - Create User
+```
+mutation {
+  createUser(
+    createUserInput: {
+      username: "janeDoe"
+      email: "janeDoe@example.com"
+      password: "password"
+    }
+  ) {
+    id
+    username
+    email
+  }
+}
+```
+
+### Example Mutation - Login
+```
+mutation {
+  login(authInput: { username: "janeDoe", password: "password" }) {
+    access_token
+  }
+}
+```
+<br>
+
+### Example Query - List Users
+```
+query {
+  users {
+    id
+    email
+    username
+  }
+}
+```
+
+### Example Query - Search Images
+```
+query {
+  images(query: "flower") {
+    imageId
+    thumbnail
+    preview
+    title
+    source
+    tags
+  }
+}
+```
+
+### Authorization
+To authenticate requests that require authorization, include the Authorization header with the token:
+```
+{
+  "Authorization": "Bearer ${auth_token}"
+}
+```
+
+## Running Tests
+
+You can run tests to ensure the application is functioning as expected.
+
+### Unit Tests
+```
 $ npm run test
+```
 
-# e2e tests
-$ npm run test:e2e
+This will execute the unit tests for the project.
 
-# test coverage
+### Test Coverage
+```
 $ npm run test:cov
 ```
+This will run the tests and generate a coverage report.
 
-## Deployment
+## Documentation
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
+Once the application is running, you can access the API documentation through the GraphQL interface.
 
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
-
-```bash
-$ npm install -g mau
-$ mau deploy
-```
-
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
-
-## Resources
-
-Check out a few resources that may come in handy when working with NestJS:
-
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
-
-## Support
-
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
-
-## Stay in touch
-
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
-
-## License
-
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+## Additional Notes
+- **Environment Variables:** The .env file is critical for configuring the application correctly, especially for connecting to the PostgreSQL database and generating JWT tokens.
+- **Docker Compose:** The project is set up to run via Docker Compose, which simplifies running and managing the application in a local environment.
+- **Authorization:** API endpoints that require authentication must include a valid Bearer token in the request headers.

@@ -60,3 +60,6 @@ package-lock.json
 
 # ignore playground.js
 playground.js
+
+# Ignore GCP_SECRET
+phanteonlab-ea1e1dc9fb99.json
