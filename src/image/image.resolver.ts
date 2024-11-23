@@ -1,8 +1,8 @@
 import { Resolver, Query,Args } from "@nestjs/graphql";
 import { ImagesService } from "./image.service";
-import { errorResponse, successResponse } from "src/common/response.helper";
+import { errorResponse, successResponse } from "../common/response.helper";
 import { Image } from "./dto/image-response.dto";
-import { setLog } from "src/common/logger.helper";
+import { setLog } from "../common/logger.helper";
 
 @Resolver()
 export class ImagesResolver {
