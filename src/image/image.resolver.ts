@@ -3,6 +3,8 @@ import { ImagesService } from "./image.service";
 import { errorResponse, successResponse } from "../common/response.helper";
 import { Image } from "./dto/image-response.dto";
 import { setLog } from "../common/logger.helper";
+import { GqlAuthGuard } from "src/auth/guard/gql-auth.guard";
+import { UseGuards } from "@nestjs/common";
 
 @Resolver()
 export class ImagesResolver {
@@ -14,9 +16,16 @@ export class ImagesResolver {
         });
     }
 
+    @UseGuards(GqlAuthGuard)
     @Query(() => [Image])
     async images(@Args('query') query: string) {
         try {
+            setLog({
+                level: 'info',
+                method: 'ImageResolver.images',
+                message: `Started getting all images`,
+            });
+
             const images = await this.imagesService.fetchImages(query);
 
             return images;
