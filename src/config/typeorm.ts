@@ -17,5 +17,5 @@ const config = {
     synchronize: false,
 }
 
-export default registerAs('typeorm', () => config)
+export default registerAs('typeOrmConfig', () => config)
 export const connectionSource = new DataSource(config as DataSourceOptions);

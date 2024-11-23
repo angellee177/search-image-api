@@ -13,7 +13,13 @@ export class UsersResolver {
   @UseGuards(GqlAuthGuard)
   @Query(() => [User])
   async users(): Promise<User[]> {
-        return this.usersService.findAll();
+    setLog({
+      level: 'info',
+      method: 'UserResolver.users',
+      message: `Started getting all users`,
+    });
+
+    return this.usersService.findAll();
   }
 
   @Mutation(() => User)

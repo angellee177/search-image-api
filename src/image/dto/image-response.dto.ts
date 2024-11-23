@@ -5,20 +5,30 @@ export class Image {
   @Field(() => ID)
   id: string;
 
-  @Field()
-  image_ID: string;
-
   @Field({ nullable: true })
-  url?: string;
+  imageId?: string = `fallback-${Date.now()}`;
 
+  /**
+   * Pixabay will get from pageUrl, 
+   * Unsplash will get from small, format 400px
+   */
+  @Field({ nullable: true }) // thumbnailUrl
+  thumbnail?: string;
+
+  /**
+   * should be small size range from 150px - 200px
+   * 
+   * Pixabay will get from previewUrl
+   * Unspalsh will get from thumb
+   */
   @Field({ nullable: true })
   preview?: string;
 
   @Field({ nullable: true })
   title?: string;
 
-  @Field()
-  source: string;
+  @Field({ nullable: true })
+  source?: string;
 
   @Field(() => [String], { nullable: true })
   tags?: string[];
