@@ -13,7 +13,7 @@ Before you can start the project, ensure all dependencies are installed:
 ```
 $ npm install
 ```
-
+<br>
 ## Running the Project
 
 You can choose to run the project locally. The following instructions cover the setup for local development:
@@ -65,10 +65,10 @@ http://localhost:${your_port}/graphql
 - Replacen `${your_port}` with the port defined in your `.env` file or the default `(e.g., 3000)`.
 - Example: If the application is running on port 3000, <br>
 visit http://localhost:3000/graphql to access the GraphQL playground.
+<br>
 
 Here are some example queries and mutations you can run:
-
-### Example Mutation - Create User
+#### Example Mutation - Create User
 ```
 mutation {
   createUser(
@@ -84,8 +84,9 @@ mutation {
   }
 }
 ```
+<br>
 
-### Example Mutation - Login
+#### Example Mutation - Login
 ```
 mutation {
   login(authInput: { username: "janeDoe", password: "password" }) {
@@ -95,7 +96,7 @@ mutation {
 ```
 <br>
 
-### Example Query - List Users
+#### Example Query - List Users
 ```
 query {
   users {
@@ -105,8 +106,9 @@ query {
   }
 }
 ```
+<br>
 
-### Example Query - Search Images
+#### Example Query - Search Images
 ```
 query {
   images(query: "flower") {
@@ -119,6 +121,7 @@ query {
   }
 }
 ```
+<br>
 
 ### Authorization
 To authenticate requests that require authorization, include the Authorization header with the token:
@@ -127,6 +130,7 @@ To authenticate requests that require authorization, include the Authorization h
   "Authorization": "Bearer ${auth_token}"
 }
 ```
+<br>
 
 ## Running Tests
 
@@ -149,7 +153,7 @@ This will run the tests and generate a coverage report.
 
 Once the application is running, you can access the API documentation through the GraphQL interface.
 
-## Additional Notes
+### Additional Notes
 - **Environment Variables:** The .env file is critical for configuring the application correctly, especially for connecting to the PostgreSQL database and generating JWT tokens.
 - **Docker Compose:** The project is set up to run via Docker Compose, which simplifies running and managing the application in a local environment.
 - **Authorization:** API endpoints that require authentication must include a valid Bearer token in the request headers.
