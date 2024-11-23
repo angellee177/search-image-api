@@ -50,9 +50,9 @@ The main focus of this API is to handle a large number of requests, around 1,000
     - Pros: Simple to set up, no external dependencies, cost-effective for small-scale apps.
     - Cons: Limited scalability (in-memory), may not handle high traffic or horizontal scaling well.
 2. **Rate limiting** <br>
-     Implement mechanisms to limit the number of requests from a user in a given time period.
-    - Pros: Helps prevent abuse, ensures fair usage, and protects APIs from being overwhelmed by too many requests. 
-    - Cons: May lead to user frustration if not properly tuned or if limits are too strict.
+     Implement mechanisms to limit the number of requests from a user in a given time period, <br>
+       - Pros: Helps prevent abuse, ensures fair usage, and protects APIs from being overwhelmed by too many requests. 
+       - Cons: May lead to user frustration if not properly tuned or if limits are too strict.
 3. **Load Balancing** <br>
      Distribute traffic evenly across multiple servers or services to handle the large number of requests.
     - Pros: Enhances availability and reliability, ensures even distribution of load, prevents single points of failure. 
