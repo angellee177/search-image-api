@@ -2,9 +2,9 @@ import { HttpService } from "@nestjs/axios";
 import { Injectable } from "@nestjs/common";
 import { lastValueFrom } from "rxjs";
 import { setLog } from "../common/logger.helper";
-import { Image } from "./dto/image-response.dto";
 import axiosRetry from 'axios-retry';
 import { filterAndTransform } from "../common/response-transform.helper";
+import * as crypto from 'crypto'; 
 
 @Injectable()
 export class ImagesService {
@@ -30,6 +30,7 @@ export class ImagesService {
         const imageRequest = [
             this.fetchFromPixabay(query),
             this.fetchFromUnsplash(query),
+            this.fetchFromStoryBlock(query),
         ];
 
         try {
@@ -66,7 +67,7 @@ export class ImagesService {
      * @param query image keywords
      * @returns 
      */
-    async fetchFromUnsplash(query: string): Promise<Image[]> {
+    async fetchFromUnsplash(query: string) {
         setLog({
             level: 'info',
             method: 'ImageService.fetchFromUnsplash',
@@ -118,7 +119,7 @@ export class ImagesService {
      * @param query image keywords
      * @returns 
      */
-    async fetchFromPixabay(query: string): Promise<Image[]> {
+    async fetchFromPixabay(query: string) {
         setLog({
             level: 'info',
             method: 'ImageService.fetchFromPixabay',
@@ -157,6 +158,79 @@ export class ImagesService {
                 level: 'error',
                 method: 'ImageService.fetchFromPixabay',
                 message: `Failed to fetch images from Pixabay for query: ${query}`,
+                error: err.message,
+            });
+
+            return []; // Return empty array if error occurs
+        }
+    }
+
+    async fetchFromStoryBlock(query: string) {
+        const baseUrl = process.env.STORYBLOCK_BASE_URL
+        const searchUrl = process.env.STORYBLOCK_SEARCH_URL
+        const threeHoursInSeconds = 3 * 60 * 60; // Convert 3 hours to seconds
+        const expirationTime = Math.floor(Date.now() / 1000) + threeHoursInSeconds;
+
+        // Create an HMAC using SHA-256 algorithm with the secret key stored in environment variables.
+        const hmacBuilder = crypto.createHmac('sha256', process.env.STORYBLOCK_API_KEY)
+        // Adding the message (searchUrl) that needs to be authenticated (usually a URL or data) to the HMAC.
+        const hmac = hmacBuilder.update(searchUrl).digest('hex'); // Generating the HMAC in hexadecimal format
+        const storyBlockUrl = `${process.env.STORYBLOCK_BASE_URL}/${process.env.STORYBLOCK_SEARCH_URL}
+            ?keywords= ${query}
+            &page=1
+            &num_results=3
+            &APIKKEY=${process.env.STORYBLOCK_API_KEY}
+            &EXPIRES=${expirationTime}
+            &HMAC=${hmac}
+            `
+
+
+        setLog({
+            level: 'info',
+            method: 'ImageService.fetchFromStoryBlock',
+            message: `Fetching image with query: ${query}`,
+        });
+
+        try {
+            // Make the API call
+            const apiResponse = await lastValueFrom(
+                this.httpService.get(
+                    `${process.env.STORYBLOCK_BASE_URL}/${process.env.STORYBLOCK_SEARCH_URL}
+                    ?keywords= ${query}
+                    &page=1
+                    &num_results=3
+                    %content_type=photos
+                    &APIKKEY=${process.env.STORYBLOCK_API_KEY}
+                    &EXPIRES=${expirationTime}
+                    &HMAC=${hmac}
+                    `
+                )
+            );
+
+            // Check if apiResponse or data.hits is undefined
+            if (!apiResponse?.data) {
+                setLog({
+                    level: 'warn',
+                    method: 'ImageService.fetchFromStoryblock',
+                    message: `No hits found for query: ${query}`,
+                });
+                return []; // Return empty array if no hits
+            }
+
+            const result = apiResponse.data.info;
+
+            setLog({
+                level: 'info',
+                method: 'ImageService.fetchFromStoryBlocks',
+                message: `success fetch image from StoryBlocks, result: ${JSON.stringify(apiResponse.data)}`,
+            });
+
+            return [];
+        } catch (err) {
+            setLog({
+                level: 'error',
+                method: 'ImageService.fetchFromStoryBlocks',
+                message: `Failed to fetch images from StoryBlocks for query: ${query}`,
                 error: err.message,
             });
 

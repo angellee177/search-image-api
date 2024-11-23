@@ -8,25 +8,26 @@ export const imageSources = {
   } as const;
 
 
-  export const transformPixabayToImageSchema = (image: any): Image => {
-    if (!image.id) {
-        console.warn(`Pixabay image missing ID: ${JSON.stringify(image)}`);
-    }
-    return {
-        id: uuidv4(),
-        imageId: image.id || 'default_image_id', // Fallback to a default value
-        thumbnail: image.pageURL || null,
-        preview: image.previewURL || null,
-        title: null,
-        source: imageSources.PIXABAY,
-        tags: image.tags ? image.tags.split(',').map(tag => tag.trim()) : [],
+    export const transformPixabayToImageSchema = (image: any): Image => {
+        if (!image.id) {
+            console.warn(`Pixabay image missing ID: ${JSON.stringify(image)}`);
+        }
+        return {
+            id: uuidv4(),
+            imageId: image.id || 'default_image_id', // Fallback to a default value
+            thumbnail: image.pageURL || null,
+            preview: image.previewURL || null,
+            title: null,
+            source: imageSources.PIXABAY,
+            tags: image.tags ? image.tags.split(',').map(tag => tag.trim()) : [],
+        };
     };
-};
 
 export const transformUnsplashToImageSchema = (image: any): Image => {
     if (!image.id) {
         console.warn(`Unsplash image missing ID: ${JSON.stringify(image)}`);
     }
+
     return {
         id: uuidv4(),
         imageId: image.id || 'default_image_id', // Fallback to a default value
@@ -41,6 +42,20 @@ export const transformUnsplashToImageSchema = (image: any): Image => {
             : [],
     };
 };
+
+export const transformStoryBlockToImageSchema = (image: any): Image => {
+    return {
+        id: uuidv4(),
+        imageId: image.id || 'default_image_id', // Fallback to a default value
+        thumbnail: image.thumbnail_url || null,
+        preview: image.preview_url || null,
+        title: image.title,
+        source: imageSources.STORYBLOCK,
+        tags: image.keywords ? image.keywords.split(',').map(
+            keyword => keyword.trim()
+        ) : [],
+    };
+}
 
 /**
  * Only get result where the promise is fulfilled
@@ -68,6 +83,14 @@ export const filterAndTransform = <T>(
             transformUnsplashToImageSchema
         );
         images.push(...unsplashImages);
+    }
+
+    // Process results[2] (StoryBlock)
+    if (results[2]?.status === "fulfilled") {
+        const storyBlockImages = (results[2] as PromiseFulfilledResult<any[]>).value.map(
+            transformUnsplashToImageSchema
+        );
+        images.push(...storyBlockImages);
     }
 
     return images;
