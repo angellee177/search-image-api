@@ -41,7 +41,7 @@ jobs:
           echo "NODE_ENV=${{ secrets.NODE_ENV }}" >> .env
           echo "PIXABAY_URL=${{ secrets.PIXABAY_URL }}" >> .env
           echo "PIXABAY_API_KEY=${{ secrets.PIXABAY_API_KEY }}" >> .env
-          echo "UNSPLASH_URL=${{ secrets.UNSPLASH_URL }}" >> ,env
+          echo "UNSPLASH_URL=${{ secrets.UNSPLASH_URL }}" >> .env
           echo "UNSPLASH_ACCESS_KEY=${{ secrets.UNSPLASH_ACCESS_KEY }}" >> .env
           echo "STORYBLOCK_BASE_URL=${{ secrets.STORYBLOCK_BASE_URL }}" >> .env
           echo "STORYBLOCK_SEARCH_URL=${{ secrets.STORYBLOCK_SEARCH_URL }}" >> .env
