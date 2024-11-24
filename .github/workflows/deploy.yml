@@ -15,13 +15,23 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v2
         with:
-          node-version: '20'  # Use the version that matches your project
+          node-version: '20'
 
       - name: Install dependencies
         run: npm install
 
       - name: Build the application
         run: npm run build
+      - name: Create .env file
+        run: |
+          echo "DB_TYPE=${{ secrets.DB_TYPE }}" >> .env
+          echo "PG_USER=${{ secrets.PG_USER }}" >> .env
+          echo "PG_PASSWORD=${{ secrets.PG_PASSWORD }}" >> .env
+          echo "PG_DB=${{ secrets.PG_DB }}" >> .env
+          echo "PG_PORT=${{ secrets.PG_PORT }}" >> .env
+          echo "PG_HOST=${{ secrets.PG_HOST }}" >> .env
+          echo "JWT_SECRET=${{ secrets.JWT_SECRET }}" >> .env
+          echo "PORT=${{ secrets.PORT }}" >> .env
 
       - name: Build Docker image
         run: |
