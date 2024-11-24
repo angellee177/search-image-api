@@ -28,10 +28,18 @@ jobs:
           echo "PG_USER=${{ secrets.PG_USER }}" >> .env
           echo "PG_PASSWORD=${{ secrets.PG_PASSWORD }}" >> .env
           echo "PG_DB=${{ secrets.PG_DB }}" >> .env
-          echo "PG_PORT=${{ secrets.PG_PORT }}" >> .env
+          echo "PG_PORT=5432" >> .env
           echo "PG_HOST=${{ secrets.PG_HOST }}" >> .env
           echo "JWT_SECRET=${{ secrets.JWT_SECRET }}" >> .env
           echo "PORT=${{ secrets.PORT }}" >> .env
+          echo "NODE_ENV=${{ secrets.NODE_ENV }}" >> .env
+          echo "PIXABAY_URL=${{ secrets.PIXABAY_URL }}" >> .env
+          echo "PIXABAY_API_KEY=${{ secrets.PIXABAY_API_KEY }}" >> .env
+          echo "UNSPLASH_URL=${{} secrets.UNSPLASH_URL }}" >> ,env
+          echo "UNSPLASH_ACCESS_KEY=${{ secrets.UNSPLASH_ACCESS_KEY }}" >> .env
+          echo "STORYBLOCK_BASE_URL=${{ secrets.STORYBLOCK_BASE_URL }}" >> .env
+          echo "STORYBLOCK_SEARCH_URL=${{ secrets.STORYBLOCK_SEARCH_URL }}" >> .env
+          echo "STORYBLOCK_API_KEY=${{ secrets.STORYBLOCK_API_KEY }}" >> .env
 
       - name: Build Docker image
         run: |

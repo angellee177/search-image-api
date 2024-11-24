@@ -1,0 +1,63 @@
+name: CI with PostgreSQL
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    services:
+      db:
+        image: postgres:latest
+        env:
+          POSTGRES_USER: angel
+          POSTGRES_PASSWORD: angel
+          POSTGRES_DB: image_api_db
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready -U angel
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Wait for PostgreSQL to be ready
+        run: |
+          until pg_isready -h localhost -U angel; do
+            echo "Waiting for PostgreSQL..."
+            sleep 2
+          done
+
+      - name: Set up environment variables
+        run: |
+          echo "DB_TYPE=${{ secrets.DB_TYPE }}" >> .env
+          echo "PG_USER=${{ secrets.PG_USER }}" >> .env
+          echo "PG_PASSWORD=${{ secrets.PG_PASSWORD }}" >> .env
+          echo "PG_DB=${{ secrets.PG_DB }}" >> .env
+          echo "PG_PORT=5432" >> .env
+          echo "PG_HOST=${{ secrets.PG_HOST }}" >> .env
+          echo "NODE_ENV=${{ secrets.NODE_ENV }}" >> .env
+
+      - name: Build Docker image
+        run: |
+          docker build . -t gcr.io/${{ secrets.GCP_PROJECT_ID }}/image-auth-db
+
+      - name: Push Docker image to Google Container Registry
+        run: |
+          gcloud auth configure-docker
+          docker push gcr.io/${{ secrets.GCP_PROJECT_ID }}/image-auth-db
+
+      - name: Deploy to Cloud Run
+        run: |
+          gcloud run deploy image-auth-db \
+            --image gcr.io/${{ secrets.GCP_PROJECT_ID }}/image-auth-db \
+            --platform managed \
+            --region ${{ secrets.GCP_REGION }} \
+            --allow-unauthenticated \
+            --project ${{ secrets.GCP_PROJECT_ID }}
